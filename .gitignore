@@ -1,3 +1,6 @@
+*.class
+*.jar
+*.swp
 ~.class
 ~.jar
 ~.swp
