@@ -78,14 +78,15 @@ public class BallAndBeamRegul extends Thread {
         double yPosition;
         double yAngle;
         double yRef; 
-        double[] currentState = new double[3];
-        double[] currentInput = new double[1];
-        double ballVelocityAlongBeam;
+        //double[] currentState = new double[3];
+        //double[] currentInput = new double[1];
+        //double ballVelocityAlongBeam;
         long h = pi.getHMillis();
         double uOuter, uInner;
-        currentState[0] = 0;
+        /*currentState[0] = 0;
         currentState[1] = 0;
         currentState[2] = 0;
+		*/
 
         while(true) { //i en period ska man göra båda kontrollerna. 
             yPosition = analogInPosition.get();
@@ -110,14 +111,14 @@ public class BallAndBeamRegul extends Thread {
                 pi.updateState(uInner);
             }
             
-            currentInput[0] = uInner;
-            currentState = bb.updateState(currentState, currentInput, h);
+            //urrentInput[0] = uInner;
+            //currentState = bb.updateState(currentState, currentInput, h);
             
 
 
 
             analogRef.set(yRef);
-            analogOut.set(currentState[0]);
+            analogOut.set(uInner);
             
             //Get the periods right.
             t = t + h;

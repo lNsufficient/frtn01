@@ -48,6 +48,7 @@ public class PID {
         this.v = p.K*(p.Beta*yref-y) + this.D + this.I; //First term P term
         return this.v;
         */
+		//The following line was commented out in order to keep I part in this class.
         return p.K*(p.Beta*yref-y) + this.D;
     }
 	
@@ -79,5 +80,7 @@ public class PID {
 	// Must clone newParameters.
 	public synchronized void setParameters(PIDParameters newParameters) {
         p = (PIDParameters)newParameters.clone(); //Has to cast PIDParameters since return type is object.
+		this.ad = p.Td/(p.Td + p.N*p.H);
+        this.bd = p.K*this.ad*p.N;
     }
 }
