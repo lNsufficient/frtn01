@@ -7,9 +7,9 @@ public class PID {
     private double ad, bd, D;
     private double y, yold;
 
-    /*integrator stuff
+    //integrator stuff
     private double I, e, v;
-    */	
+    	
 
 	// Constructor
 	public PID(String name) {
@@ -30,6 +30,10 @@ public class PID {
         this.bd = p.K*this.ad*p.N;
 
         PIDGUI pidGUI = new PIDGUI(this, p, name);
+		
+		this.I = 0;
+		this.e = 0;
+		this.v = 0;
     }
 
 
@@ -43,13 +47,13 @@ public class PID {
         
         //this is only necessary if there is an integrator...should be removed I guess
         //for now I keep it here but commented out...
-        /*
+        
         this.e = yref-y; //This need to be saved to updateState
         this.v = p.K*(p.Beta*yref-y) + this.D + this.I; //First term P term
         return this.v;
-        */
+        
 		//The following line was commented out in order to keep I part in this class.
-        return p.K*(p.Beta*yref-y) + this.D;
+        //return p.K*(p.Beta*yref-y) + this.D;
     }
 	
 	// Updates the controller state.
@@ -59,13 +63,13 @@ public class PID {
         this.yold = this.y;
         
         /* This thing here should not be needed in this class for BallBeam
-        however I will keep it here if it is needed for some reason...
+        however I will keep it here if it is needed for some reason... */
         if (p.integratorOn) {
             this.I = this.I + p.K*p.H*this.e/p.Ti+ p.H*p.Tr*(u-this.v);
         } else {
             this.I = 0; //So the calculateOutput method will give correct answer.
         }
-        */
+        
 
     }
 	
@@ -82,5 +86,10 @@ public class PID {
         p = (PIDParameters)newParameters.clone(); //Has to cast PIDParameters since return type is object.
 		this.ad = p.Td/(p.Td + p.N*p.H);
         this.bd = p.K*this.ad*p.N;
+		p.integratorOn = (p.Ti!= 0);
+		if (!p.integratorOn) {
+			this.I = 0;
+		}
+		
     }
 }
