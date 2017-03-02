@@ -10,7 +10,7 @@ public class PI {
 	// Constructor
 	public PI(String name) {
         p = new PIParameters();
-        p.K = 4; //Should be 0.5 - 10;
+        p.K = 1.25; //Should be 0.5 - 10;
         p.Ti = 0; //Should be zero - no integration!
         p.Tr = 1;
         p.Beta = 1; //I guess it should be between 0 - 1;
@@ -18,7 +18,7 @@ public class PI {
         p.integratorOn = (p.Ti != 0);
 
 
-        PIGUI piGUI = new PIGUI(this, p, name);
+       // PIGUI piGUI = new PIGUI(this, p, name);
 
         //The following should be unneccesary since double is a primitive parameter
         this.I = 0;
@@ -56,5 +56,17 @@ public class PI {
 	// Must clone newParameters.
 	public synchronized void setParameters(PIParameters newParameters) {
         p = (PIParameters)newParameters.clone(); //Has to cast PIParameters since return type is object. 
+    }
+    
+      // Sets the I-part of the controller to 0.
+  // For example needed when changing controller mode.
+  public synchronized void reset() {
+        this.I = 0;
+        p.integratorOn= false;
+    }
+
+      // Returns the current PIParameters.
+  public synchronized PIParameters getParameters(){
+        return (PIParameters)p.clone();
     }
 }

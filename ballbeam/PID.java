@@ -5,7 +5,7 @@ public class PID {
 
     //D term:
     private double ad, bd, D;
-    private double y, yold;
+    private double y, yold, eold;
 
     //integrator stuff
     private double I, e, v;
@@ -14,11 +14,12 @@ public class PID {
 	// Constructor
 	public PID(String name) {
         p = new PIDParameters();
-        p.K = -0.015; //Should be between (-0.02) - (-0.01)
+        p.K = -0.2; //Should be between (-0.02) - (-0.01)
+
         p.Ti = 0; //Should be zero - no integrator 
         p.Tr = 0; //Should be between 
-        p.Td = 2; //Should be between 0.5-4
-        p.N = 7; //Should be between 5-10
+        p.Td = 0.9; //Should be between 0.5-4
+        p.N = 12; //Should be between 5-10
         p.Beta = 1; //Should be between 1-0 I guess
         p.H = 0.1; //Should be the same asin PI.java, set to 0.1
         p.integratorOn = false; //Should be off. 
@@ -29,7 +30,7 @@ public class PID {
         this.ad = p.Td/(p.Td + p.N*p.H);
         this.bd = p.K*this.ad*p.N;
 
-        PIDGUI pidGUI = new PIDGUI(this, p, name);
+        //PIDGUI pidGUI = new PIDGUI(this, p, name);
 		
 		this.I = 0;
 		this.e = 0;
@@ -42,13 +43,14 @@ public class PID {
 	// Called from BallAndBeamRegul.
 	public synchronized double calculateOutput(double y, double yref) {
         this.y = y;
+        this.e = yref-y; //This need to be saved to updateState
         //Note that there is no I term implemented
-        this.D = ad*this.D - bd*(y - this.yold);//Would be more efficient not do declare this variable and just put it inside v?
+        this.D = ad*this.D + bd*(this.e - this.eold);//Would be more efficient not do declare this variable and just put it inside v?
+//        this.D = ad*this.D - bd*(y - this.yold);//Would be more efficient not do declare this variable and just put it inside v?
         
         //this is only necessary if there is an integrator...should be removed I guess
         //for now I keep it here but commented out...
         
-        this.e = yref-y; //This need to be saved to updateState
         this.v = p.K*(p.Beta*yref-y) + this.D + this.I; //First term P term
         return this.v;
         
@@ -61,7 +63,7 @@ public class PID {
 	// Called from BallAndBeamRegul.
 	public synchronized void updateState(double u) {
         this.yold = this.y;
-        
+        this.eold = this.e;
         /* This thing here should not be needed in this class for BallBeam
         however I will keep it here if it is needed for some reason... */
         if (p.integratorOn) {
@@ -92,4 +94,18 @@ public class PID {
 		}
 		
     }
+    
+    // Sets the I-part and D-part of the controller to 0.
+  // For example needed when changing controller mode.
+    public synchronized void reset() {
+        this.I = 0;
+        p.integratorOn = false;
+        this.D = 0;
+    }
+    
+// Returns the current PIDParameters.
+  public synchronized PIDParameters getParameters(){
+        return (PIDParameters)p.clone();
+    }
+
 }
